@@ -10,22 +10,18 @@ index = manager.list()
 index.append(0)
 
 workers = manager.list()
-numeroDeWorkers = 2
-
-driverss = []
+numeroDeWorkers = 3
 
 for i in range(numeroDeWorkers):
-    dri = webdriver.Chrome()
-    driverss.append(dri)
-    workers.append(i)
+    workers.append("uno")
 
 listaDeLinks = manager.list()
 
 
-def subExplorar(url, driver,inde):
+def subExplorar(url, nada):
     try:
         print(url)
-        #driver = webdriver.Firefox()
+        driver = webdriver.Chrome()
         driver.get(url)
         time.sleep(2)
         links = list(map(lambda x: x.get_attribute("href"), driver.find_elements_by_xpath("//a")))
@@ -33,12 +29,13 @@ def subExplorar(url, driver,inde):
         file = open("./info/"+driver.title + str(time.time()) + ".txt", "w+")
         file.write(url + "\n" + driver.page_source)
         print("termine: " + url)
-        #driver.quit()
-    except Exception as e:
+        driver.quit()
+    except:
         fil = open("./errores/linksnoaccedidos.txt", "w+")
-        print(e)
+        fil.write(url)
         fil.close()
-    workers.append(inde)
+        pass
+    workers.append("uno")
 
 
 def explorar(url):
@@ -68,7 +65,7 @@ def workerDisponible():
     return True if len(workers) > 0 else False
 
 
-linksPrimerNivel = explorar("https://simple.ripley.cl/")
+linksPrimerNivel = explorar("http://jumbo.cl")
 print(linksPrimerNivel[0])
 
 
@@ -79,9 +76,8 @@ def cavar(array):
         #print(array[index[0]])
         link = array[index[0]]
         if workerDisponible():
-            driv = workers.pop()
-            elDri = driverss[driv]
-            w = Process(target=subExplorar, args=(link, elDri,driv))
+            w = workers.pop()
+            w = Process(target=subExplorar, args=(link, ""))
             index[0] += 1
             w.start()
 
@@ -91,12 +87,8 @@ try:
     cavar(linksPrimerNivel)
     print("fin cabar 1")
     print(listaDeLinks)
-    cavar(linksPrimerNivel)
-    
 
-
-except Exception as e:
-    print(e)
+except:
     pass
 
 print("fin Crawl")
